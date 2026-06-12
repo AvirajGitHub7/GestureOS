@@ -1,36 +1,37 @@
-# 🖐️ GestureOS
+# GestureOS
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-Tasks--Vision-007f8b?style=for-the-badge&logo=google)](https://developers.google.com/mediapipe)
 
-**GestureOS** is a premium, portfolio-grade web application designed to control presentations and PDF slide decks using hand gestures. Powered by hardware-accelerated client-side computer vision, it runs entirely on-device, offering zero-latency controls, custom PDF uploads, and full-screen workspace HUD displays.
+GestureOS is a portfolio-grade, web-based presentation control suite that enables users to navigate slideshows and PDF decks in real-time using hand gestures. Powered by hardware-accelerated client-side computer vision, it runs entirely on-device, offering zero-latency controls, custom PDF uploads, and full-screen workspace HUD displays.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-*   **⚡ Real-Time Tracking:** Harnesses Google MediaPipe's WebAssembly & WebGL hand landmarker pipeline to track 21 discrete coordinate points on the hand at up to 60fps.
-*   **📂 Local PDF Compiler:** Drag, drop, and convert multi-page PDF documents entirely client-side using Mozilla's `pdfjs-dist` engine.
-*   **🖥️ Fullscreen HUD Overlay:** Enter fullscreen presentation mode and use floating, glassmorphic heads-up display overlays showing active connection statuses and hand posture updates.
-*   **🛡️ Local Privacy First:** Zero cloud uploads. All webcam feed processing and document rendering happen locally inside the sandbox.
+*   **Real-Time Tracking:** Harnesses Google MediaPipe's WebAssembly & WebGL hand landmarker pipeline to track 21 discrete coordinate points on the hand at up to 60fps.
+*   **Responsive Workspace Dashboard:** Camera feedback and live tracking overlay on the left, slide deck presentation area on the right.
+*   **Drag-and-Drop PDF Uploader:** Drag, drop, and convert multi-page PDF documents entirely client-side using Mozilla's `pdfjs-dist` engine.
+*   **Fullscreen HUD Overlay:** Enter fullscreen presentation mode and use floating, glassmorphic heads-up display overlays showing active connection statuses and hand posture updates.
+*   **Local Privacy First:** Zero cloud uploads. All webcam feed processing and document rendering happen locally inside the sandbox.
 
 ---
 
-## 🖐️ Gesture Reference & Control Scheme
+## Gesture Reference & Control Scheme
 
 To prevent accidental page turns, GestureOS features a robust **1-second cooldown lock** between navigation actions.
 
 | Gesture | Mapped Action | Mechanics & Detection Rule |
 | :--- | :--- | :--- |
-| ✋ **Open Palm** | **Start / Reset Control** | Tracks if all 5 fingers are fully extended (y-coordinate of tips is above joint knuckles). Activates control loop and resets deck to Slide 1. |
-| 👍 **Thumbs Up** | **Next Slide (Forward)** | Measures if the index, middle, ring, and pinky are fully curled down while the thumb is pointed upward above the hand bounding box. |
-| ✊ **Closed Fist** | **Previous Slide (Backward)** | Measures if all 5 fingers are tightly curled (y-coordinate of tips is below joint knuckles). Navigates backward. |
+| **Open Palm** | **Start / Reset Control** | Tracks if all 5 fingers are fully extended (y-coordinate of tips is above joint knuckles). Activates control loop and resets deck to Slide 1. |
+| **Thumbs Up** | **Next Slide (Forward)** | Measures if the index, middle, ring, and pinky are fully curled down while the thumb is pointed upward above the hand bounding box. |
+| **Closed Fist** | **Previous Slide (Backward)** | Measures if all 5 fingers are tightly curled (y-coordinate of tips is below joint knuckles). Navigates backward. |
 
 ---
 
-## 🧠 Under the Hood: Gesture Classification logic
+## Under the Hood: Gesture Classification Logic
 
 GestureOS parses hand landmarks based on coordinate relationships. The 21 hand landmarks tracked by MediaPipe are compared relative to one another in `src/utils/gestureDetection.ts`:
 
@@ -47,7 +48,7 @@ GestureOS parses hand landmarks based on coordinate relationships. The 21 hand l
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 gestureos/
@@ -77,7 +78,7 @@ gestureos/
 
 ---
 
-## 🚀 Installation & Local Setup
+## Installation & Local Setup
 
 Ensure you have **Node.js 18.x+** installed on your system.
 
@@ -106,6 +107,15 @@ Ensure you have **Node.js 18.x+** installed on your system.
 
 ---
 
-## 📄 License
+## Privacy & Safety First
+
+GestureOS initializes the webcam local stream using the standard browser `getUserMedia` API.
+* No video frames, coordinates, or pixel data are uploaded to servers.
+* No cookies, analytics trackers, or user telemetry exist.
+* The PDF document upload parses files entirely within a local browser `ArrayBuffer`.
+
+---
+
+## License
 
 This project is open-source and available under the [MIT License](LICENSE).
