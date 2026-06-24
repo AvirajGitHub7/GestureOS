@@ -1,7 +1,8 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { Hand, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { motion } from "framer-motion";
 
 export default function SignIn() {
@@ -27,11 +28,30 @@ export default function SignIn() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative z-10 w-full max-w-md p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/[0.05] shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-3xl flex flex-col items-center text-center"
       >
-        <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-8 shadow-[inset_0_1px_0_rgba(139,92,246,0.2),0_0_20px_rgba(139,92,246,0.15)]">
-          <Hand className="w-8 h-8 text-violet-400" />
+        {/* Animated Brand Centerpiece */}
+        <div className="relative mb-12 flex items-center justify-center">
+          {/* Orbital rings */}
+          <motion.div 
+            animate={{ rotate: 360 }} 
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute w-32 h-32 rounded-full border border-violet-500/20 border-t-fuchsia-500/60"
+          />
+          <motion.div 
+            animate={{ rotate: -360 }} 
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute w-24 h-24 rounded-full border border-fuchsia-500/20 border-b-violet-500/60"
+          />
+          
+          {/* Central Logo Container */}
+          <motion.div 
+            whileHover={{ scale: 1.1 }}
+            className="w-16 h-16 rounded-[1.25rem] bg-[#070213]/80 border border-white/10 flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl relative z-10"
+          >
+            <Logo className="w-8 h-8 drop-shadow-[0_0_15px_rgba(217,70,239,0.8)]" />
+          </motion.div>
         </div>
         
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-3">Welcome to GestureOS</h1>
+        <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3">Welcome to Gesture<span className="text-violet-400 font-light">OS</span></h1>
         <p className="text-sm text-white/40 mb-10 leading-relaxed px-4">
           Sign in to save your profile and access advanced presentation controls.
         </p>
