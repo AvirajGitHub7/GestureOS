@@ -95,9 +95,11 @@ export function PDFUploader({ onSlidesLoaded }: PDFUploaderProps) {
     <div
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className="p-6 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center justify-center gap-4 text-center cursor-pointer hover:border-emerald-500/30 hover:bg-emerald-500/[0.01] transition-all group"
+      className="p-8 rounded-[2rem] bg-white/[0.01] border border-white/[0.05] border-dashed backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.02),0_20px_40px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center gap-5 text-center cursor-pointer hover:border-violet-500/50 hover:bg-violet-500/[0.02] transition-all duration-300 group relative overflow-hidden"
       onClick={() => fileInputRef.current?.click()}
     >
+      <div className="absolute inset-0 bg-gradient-to-b from-violet-500/0 via-violet-500/[0.01] to-violet-500/[0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      
       <input
         type="file"
         ref={fileInputRef}
@@ -107,35 +109,38 @@ export function PDFUploader({ onSlidesLoaded }: PDFUploaderProps) {
       />
 
       {loading ? (
-        <div className="flex flex-col items-center gap-3 py-4 w-full">
-          <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
-          <p className="text-gray-300 font-semibold">Generating Presentation...</p>
-          <div className="w-full max-w-xs bg-white/10 h-1.5 rounded-full overflow-hidden mt-1 border border-white/5">
+        <div className="flex flex-col items-center gap-4 py-6 w-full relative z-10">
+          <div className="relative">
+            <Loader2 className="w-12 h-12 text-violet-500 animate-spin opacity-50 absolute inset-0 blur-md" />
+            <Loader2 className="w-12 h-12 text-fuchsia-400 animate-spin relative" />
+          </div>
+          <p className="text-[10px] tracking-[0.2em] uppercase font-bold text-violet-300">Generating Presentation</p>
+          <div className="w-full max-w-[200px] bg-white/[0.05] h-1 rounded-full overflow-hidden mt-2 shadow-[inset_0_1px_0_rgba(0,0,0,0.5)]">
             <div 
-              className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300"
+              className="bg-gradient-to-r from-violet-500 to-fuchsia-400 h-full transition-all duration-300 shadow-[0_0_10px_rgba(217,70,239,0.8)]"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-gray-500 font-mono">{progress}% Complete</span>
+          <span className="text-[10px] text-white/40 font-mono font-medium">{progress}% Complete</span>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-3 py-2">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform duration-300">
-            <Upload className="w-5 h-5" />
+        <div className="flex flex-col items-center gap-4 py-4 relative z-10">
+          <div className="w-16 h-16 rounded-[1.5rem] bg-white/[0.02] border border-white/[0.05] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] flex items-center justify-center text-violet-400 group-hover:scale-110 group-hover:bg-violet-500/10 group-hover:border-violet-500/30 transition-all duration-500">
+            <Upload className="w-6 h-6 group-hover:text-fuchsia-300 transition-colors" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">Upload Presentation PDF</h4>
-            <p className="text-xs text-gray-400 mt-1 max-w-xs leading-relaxed">
-              Drag and drop any PDF presentation file, or click to browse. Processing runs 100% locally.
+            <h4 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors tracking-wide">Upload PDF Deck</h4>
+            <p className="text-[11px] text-white/40 mt-2 max-w-xs leading-relaxed font-medium px-4">
+              Drag and drop any presentation file. Processing runs 100% locally on the edge.
             </p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 text-rose-400 text-xs mt-2 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg w-full justify-center">
+        <div className="flex items-center gap-2 text-rose-400 text-xs mt-2 bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl w-full justify-center shadow-[inset_0_1px_0_rgba(244,63,94,0.2)]">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>{error}</span>
+          <span className="font-medium tracking-wide">{error}</span>
         </div>
       )}
     </div>

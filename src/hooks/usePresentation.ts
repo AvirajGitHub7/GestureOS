@@ -85,7 +85,7 @@ export function usePresentation() {
     if (now - lastActionTime.current < COOLDOWN_MS) return;
 
     setState(prev => {
-      let newState = { ...prev };
+      const newState = { ...prev };
       let actionTaken = false;
 
       if (gesture === 'open_palm' && !prev.isRunning) {
