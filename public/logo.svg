@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logo-grad-primary" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#8B5CF6" />
+      <stop offset="1" stopColor="#D946EF" />
+    </linearGradient>
+    <linearGradient id="logo-grad-secondary" x1="100" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#6366F1" />
+      <stop offset="1" stopColor="#C026D3" />
+    </linearGradient>
+  </defs>
+  <path d="M 15 20 L 50 85 L 85 20 L 60 20 L 50 45 L 40 20 Z" fill="url(#logo-grad-primary)" />
+  <path d="M 35 20 L 65 20 L 50 55 Z" fill="url(#logo-grad-secondary)" />
+</svg>

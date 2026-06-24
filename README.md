@@ -1,102 +1,142 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/hand.svg" width="80" alt="GestureOS Logo">
-  
-  <h1 align="center">GestureOS</h1>
-  <p align="center">
-    <strong>Zero-latency, edge AI presentation control powered by your webcam.</strong>
-    <br />
-    Step away from the keyboard and navigate slide decks using natural hand gestures.
-  </p>
+<img src="./public/logo.svg" width="100" alt="GestureOS Logo" />
 
-  <p align="center">
-    <a href="#features">Features</a> •
-    <a href="#tech-stack">Tech Stack</a> •
-    <a href="#getting-started">Getting Started</a> •
-    <a href="#gestures">Supported Gestures</a>
-  </p>
-</div>
+# GestureOS
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![MediaPipe](https://img.shields.io/badge/MediaPipe-Tasks--Vision-007f8b?style=for-the-badge&logo=google)](https://developers.google.com/mediapipe)
+
+GestureOS is a portfolio-grade, web-based presentation control suite that enables users to navigate slideshows and PDF decks in real-time using hand gestures. Powered by hardware-accelerated client-side computer vision, it runs entirely on-device, offering zero-latency controls, custom PDF uploads, and full-screen workspace HUD displays.
 
 ---
 
-## ⚡ Features
+## Key Features
 
-- **✋ Zero-Latency Tracking:** Powered by Google's MediaPipe HandLandmarker, tracking 21 coordinates on your hand at 60FPS using hardware-accelerated WebAssembly.
-- **🔒 100% Privacy & Edge AI:** The entire inference pipeline runs directly in your browser. No video frames, presentations, or telemetry data ever leave your device.
-- **📄 Native PDF Support:** Drag and drop any PDF presentation to control it instantly with hand movements.
-- **🔐 Secure Authentication:** Gated workspace access using NextAuth (Google Provider) backed by MongoDB Atlas.
-- **🎨 Premium UI/UX:** A stunning, responsive interface built with Tailwind CSS, featuring dark-mode glassmorphism, ambient radial gradients, and fluid Framer Motion animations.
-
-## 🛠️ Tech Stack
-
-- **Framework:** [Next.js 15+](https://nextjs.org/) (App Router)
-- **AI & Vision:** [MediaPipe Tasks Vision](https://developers.google.com/mediapipe) / WebAssembly
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/)
-- **Authentication:** [NextAuth.js](https://next-auth.js.org/)
-- **Database:** [MongoDB](https://www.mongodb.com/) & [Mongoose](https://mongoosejs.com/)
-- **PDF Rendering:** [PDF.js](https://mozilla.github.io/pdf.js/)
+*   **Real-Time Tracking:** Harnesses Google MediaPipe's WebAssembly & WebGL hand landmarker pipeline to track 21 discrete coordinate points on the hand at up to 60fps.
+*   **Responsive Workspace Dashboard:** Camera feedback and live tracking overlay on the left, slide deck presentation area on the right.
+*   **Drag-and-Drop PDF Uploader:** Drag, drop, and convert multi-page PDF documents entirely client-side using Mozilla's `pdfjs-dist` engine.
+*   **Fullscreen HUD Overlay:** Enter fullscreen presentation mode and use floating, glassmorphic heads-up display overlays showing active connection statuses and hand posture updates.
+*   **Local Privacy First:** Zero cloud uploads. All webcam feed processing and document rendering happen locally inside the sandbox.
 
 ---
 
-## 📸 Screenshots
+## Gesture Reference & Control Scheme
 
-*(To be added: Take a few screenshots of your running app and place them in `public/screenshots/`!)*
+To prevent accidental page turns, GestureOS features a robust **1-second cooldown lock** between navigation actions.
 
-<p align="center">
-  <img src="/screenshots/hero.png" width="48%" alt="Landing Page Hero Section" style="border-radius: 12px; border: 1px solid #333;" />
-  <img src="/screenshots/workspace.png" width="48%" alt="Gesture Workspace" style="border-radius: 12px; border: 1px solid #333;" />
-</p>
+| Gesture | Mapped Action | Mechanics & Detection Rule |
+| :--- | :--- | :--- |
+| **Open Palm** | **Start / Reset Control** | Tracks if all 5 fingers are fully extended (y-coordinate of tips is above joint knuckles). Activates control loop and resets deck to Slide 1. |
+| **Thumbs Up** | **Next Slide (Forward)** | Measures if the index, middle, ring, and pinky are fully curled down while the thumb is pointed upward above the hand bounding box. |
+| **Closed Fist** | **Previous Slide (Backward)** | Measures if all 5 fingers are tightly curled (y-coordinate of tips is below joint knuckles). Navigates backward. |
 
 ---
 
-## 🚀 Getting Started
+## Under the Hood: Gesture Classification Logic
 
-Follow these steps to set up GestureOS on your local machine.
+GestureOS parses hand landmarks based on coordinate relationships. The 21 hand landmarks tracked by MediaPipe are compared relative to one another in `src/utils/gestureDetection.ts`:
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/gestureos.git
-cd gestureos
+1.  **Tip vs Knuckle Check:** A finger is classified as **extended** if its tip landmark's $y$-coordinate is less than its PIP joint's $y$-coordinate (for standard upright cameras).
+    *   *Index:* `Landmark 8.y < Landmark 6.y`
+    *   *Middle:* `Landmark 12.y < Landmark 10.y`
+    *   *Ring:* `Landmark 16.y < Landmark 14.y`
+    *   *Pinky:* `Landmark 20.y < Landmark 18.y`
+2.  **Thumbs Up Logic:** 
+    *   Index, Middle, Ring, and Pinky are verified as **curled** (tips below knuckles).
+    *   Thumb tip (`Landmark 4`) is verified as pointing **upward** and extended above the hand center (`Landmark 4.y < Landmark 2.y`).
+3.  **Fist Logic:**
+    *   Index, Middle, Ring, Pinky, and Thumb tips are all verified as **curled** below their respective joints.
+
+---
+
+## Repository Structure
+
+```text
+gestureos/
+├── public/
+│   ├── models/               # MediaPipe task models and custom static decks
+│   └── logo.svg              # Brand logo
+├── src/
+│   ├── app/
+│   │   ├── api/auth/         # NextAuth.js API routes for Google Provider
+│   │   ├── auth/signin/      # Custom authenticated sign-in pages
+│   │   ├── layout.tsx        # Global setup, fonts loader, and Auth Providers
+│   │   ├── page.tsx          # Landing page & Workspace view routing orchestrator
+│   │   ├── icon.tsx          # Dynamic SVG Favicon generator
+│   │   └── globals.css       # CSS utility definitions (custom glow utilities)
+│   ├── components/
+│   │   ├── Navbar.tsx        # Responsive landing page header with scroll anchors
+│   │   ├── LandingHero.tsx   # Hero typography & visual particle graphic
+│   │   ├── AboutSection.tsx  # How-it-works visual timeline & feature cards
+│   │   ├── WebcamFeed.tsx    # Live camera capture & hand landmark Canvas overlays
+│   │   ├── SlideViewer.tsx   # Fullscreen API slides viewport & HUD overlay
+│   │   ├── GestureStatus.tsx # Gesture identification status panel
+│   │   ├── PDFUploader.tsx   # Client-side PDF-to-canvas image pipeline
+│   │   ├── Providers.tsx     # NextAuth SessionProvider wrapper
+│   │   └── Logo.tsx          # Reusable vector brand logo component
+│   ├── hooks/
+│   │   ├── useHandTracking.ts  # Stream loop listener, MediaPipe loading & canvas drawing
+│   │   └── usePresentation.ts  # Cooldown triggers and slide index hooks
+│   ├── lib/
+│   │   └── mongodb.ts        # Singleton MongoDB Mongoose connection utility
+│   ├── models/
+│   │   └── User.ts           # Mongoose schema for authenticated users
+│   ├── types/
+│   │   └── gesture.ts        # Slide structures & posture typings
+│   └── utils/
+│       └── gestureDetection.ts # Coordinate parsing heuristics
 ```
 
-### 2. Install dependencies
-```bash
-npm install
-```
+---
 
-### 3. Set up Environment Variables
-Create a `.env.local` file in the root directory and configure your NextAuth and MongoDB credentials:
+## Installation & Local Setup
 
-```env
-GOOGLE_CLIENT_ID="your_google_client_id"
-GOOGLE_CLIENT_SECRET="your_google_client_secret"
+Ensure you have **Node.js 18.x+** installed on your system.
 
-MONGODB_URI="your_mongodb_atlas_connection_string"
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/AvirajGitHub7/GestureOS.git
+    cd gestureos
+    ```
 
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="a_secure_random_string"
-```
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-### 4. Run the development server
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+3.  **Environment Configuration**
+    Create a `.env.local` file in the root of your project and configure your credentials for NextAuth and MongoDB Atlas:
+    ```env
+    GOOGLE_CLIENT_ID="your_google_client_id"
+    GOOGLE_CLIENT_SECRET="your_google_client_secret"
+    MONGODB_URI="your_mongodb_connection_string"
+    NEXTAUTH_URL="http://localhost:3000"
+    NEXTAUTH_SECRET="your_generated_secret"
+    ```
+
+4.  **Run Development Server**
+    ```bash
+    npm run dev
+    ```
+    Access the application at [http://localhost:3000](http://localhost:3000).
+
+5.  **Production Compilation**
+    ```bash
+    npm run build
+    npm run start
+    ```
 
 ---
 
-## 🖐️ Supported Gestures
+## Privacy & Safety First
 
-GestureOS evaluates finger joint angles and thumb positions to classify gestures in real-time.
-
-1. **Open Palm (Launch):** Extend all five fingers. Activates control mode and initializes slide 1.
-2. **Thumbs Up (Next Slide):** Extend your thumb pointing upwards. Advances the deck to the next slide.
-3. **Closed Fist (Previous Slide):** Curl all fingers completely. Navigates back to the preceding slide.
-
-*(A 1-second cooldown is enforced between slide transitions to prevent accidental double-skips).*
+GestureOS initializes the webcam local stream using the standard browser `getUserMedia` API.
+* No video frames, coordinates, or pixel data are uploaded to servers.
+* No cookies, analytics trackers, or user telemetry exist.
+* The PDF document upload parses files entirely within a local browser `ArrayBuffer`.
 
 ---
 
-<div align="center">
-  <p>Built with ❤️ for modern presentations.</p>
-</div>
+## License
+
+This project is open-source and available under the [MIT License](LICENSE).
